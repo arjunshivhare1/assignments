@@ -39,11 +39,99 @@
 
   Testing the server - run `npm run test-todoServer` command in terminal
  */
-  const express = require('express');
-  const bodyParser = require('body-parser');
-  
-  const app = express();
-  
-  app.use(bodyParser.json());
-  
-  module.exports = app;
+const express = require("express");
+const bodyParser = require("body-parser");
+const fs = require("fs");
+
+const app = express();
+
+app.use(bodyParser.json());
+
+app.get("/todos", (req, res) => {
+  fs.readFile("todos.json", "utf8", function (err, data) {
+    if (err) throw err;
+    res.json(JSON.parse(data));
+  });
+});
+
+app.get("/todos/:id", (req, res) => {
+  fs.readFile("./todos.json", "utf8", (err, data = []) => {
+    if (err) throw err;
+
+    const todos = JSON.parse(data);
+
+    const todoIndex = todos.findIndex(
+      (todo) => todo.id === parseInt(req.params.id)
+    );
+
+    if (todoIndex === -1) return res.status(404).send();
+
+    res.json(todos[todoIndex]);
+  });
+});
+
+app.post("/todos/", (req, res) => {
+  const newTodo = {
+    ...req.body,
+    id: Math.floor(Math.random() * 1000000),
+  };
+  fs.readFile("./todos.json", "utf8", (err, data = []) => {
+    if (err) throw err;
+
+    const todos = JSON.parse(data);
+    todos.push(newTodo);
+
+    fs.writeFile("./todos.json", JSON.stringify(todos), (err) => {
+      if (err) throw err;
+      res.status(201).json(newTodo);
+    });
+  });
+});
+
+app.put("/todos/:id", (req, res) => {
+  fs.readFile("./todos.json", "utf8", (err, data = []) => {
+    if (err) throw err;
+
+    const todos = JSON.parse(data);
+
+    const todoIndex = todos.findIndex(
+      (todo) => todo.id === parseInt(req.params.id)
+    );
+
+    if (todoIndex === -1) return res.status(404).send();
+
+    todos[todoIndex] = { ...req.body, id: todos[todoIndex].id };
+
+    fs.writeFile("./todos.json", JSON.stringify(todos), (err) => {
+      if (err) throw err;
+
+      return res.status(200).send();
+    });
+  });
+});
+
+app.delete("/todos/:id", (req, res) => {
+  fs.readFile("./todos.json", "utf8", (err, data = []) => {
+    if (err) throw err;
+    const todos = JSON.parse(data);
+    const todoIndex = todos.findIndex(
+      (todo) => todo.id === parseInt(req.params.id)
+    );
+
+    if (todoIndex === -1) return res.status(404).send();
+
+    todos.slice(todoIndex, 1);
+
+    fs.writeFile("./todos.json", JSON.stringify(todos), (err) => {
+      if (err) throw err;
+
+      res.status(200).send();
+    });
+  });
+});
+
+app.all("*", (req, res) => {
+  res.status(404).send("Route not found");
+});
+
+module.exports = app;

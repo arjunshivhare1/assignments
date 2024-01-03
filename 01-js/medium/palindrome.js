@@ -4,7 +4,27 @@
 */
 
 function isPalindrome(str) {
-  return true;
+  str = str
+    .toLowerCase()
+    .replace(/[^\w\s]/g, "")
+    .split(" ")
+    .join("");
+
+  let palindrome = true;
+
+  const getLength = (str) => {
+    return str.length % 2 ? str.length + 1 / 2 : str.length / 2;
+  };
+
+  for (let i = 0; i < getLength(); i++) {
+    const reverseIndex = str.length - i - 1;
+
+    if (str[i] !== str[reverseIndex]) palindrome = false;
+
+    if (!palindrome) break;
+  }
+
+  return palindrome;
 }
 
 module.exports = isPalindrome;

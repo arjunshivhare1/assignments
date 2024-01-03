@@ -1,6 +1,6 @@
 /*
   Implement a class `Calculator` having below methods
-    - initialise a result variable in the constructor and keep updating it after every arithmetic operation
+    - initialize a result variable in the constructor and keep updating it after every arithmetic operation
     - add: takes a number and adds it to the result
     - subtract: takes a number and subtracts it from the result
     - multiply: takes a number and multiply it to the result
@@ -16,6 +16,45 @@
   Once you've implemented the logic, test your code by running
 */
 
-class Calculator {}
+class Calculator {
+  constructor() {
+    this.result = 0;
+  }
+
+  add(number) {
+    this.result = this.result + number;
+  }
+
+  subtract(number) {
+    this.result = this.result - number;
+  }
+
+  multiply(number) {
+    this.result = this.result * number;
+  }
+
+  divide(number) {
+    if (this.result / number === Infinity) {
+      throw error;
+    }
+    this.result = this.result / number;
+  }
+
+  clear() {
+    this.result = 0;
+  }
+
+  getResult() {
+    return this.result;
+  }
+
+  calculate(expression) {
+    const result = eval(expression);
+    if (result === Infinity) {
+      throw error;
+    }
+    this.result = result;
+  }
+}
 
 module.exports = Calculator;
